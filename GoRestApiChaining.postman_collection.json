@@ -1,0 +1,266 @@
+{
+	"info": {
+		"_postman_id": "fbe86c3c-8e20-4306-b8db-52daa11f1e00",
+		"name": "GoRestApiChaining",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "createUser",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var random_value=Math.random().toString(36).substring(3);\r",
+							"//console.log(random_value);\r",
+							"var email= \"jim\"+random_value+\"@gmail.com\";\r",
+							"//console.log(email);\r",
+							"var name = \"Jim\"+random_value;\r",
+							"pm.environment.set(\"name_env\",name);\r",
+							"pm.environment.set(\"email_env\",email);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData=JSON.parse(responseBody);\r",
+							"pm.environment.set(\"id_env\",jsonData.id);\r",
+							"pm.test(\"verify status code\", ()=>\r",
+							"{\r",
+							"pm.response.to.have.status(201);\r",
+							"pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
+							"});\r",
+							"pm.test(\"response time below 600ms\",()=>{\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(600);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"{{name_env}}\", \r\n\"gender\":\"male\", \r\n\"email\":\"{{email_env}}\", \r\n\"status\":\"inactive\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/public/v2/users",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "getUserDetails",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData =pm.response.json();\r",
+							"pm.test(\"verify value in json response\" ,()=>\r",
+							"{\r",
+							" pm.expect(jsonData.name).to.be.eql(pm.environment.get(\"name_env\"));\r",
+							" pm.expect(jsonData.email).to.be.eql(pm.environment.get(\"email_env\"));\r",
+							"});\r",
+							"pm.test(\"verify status code\", ()=>\r",
+							"{\r",
+							"pm.response.to.have.status(200);\r",
+							"pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
+							"});\r",
+							"pm.test(\"response time below 600ms\",()=>{\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(600);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/public/v2/users/{{id_env}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id_env}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "updateUserDetails",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"var random_value=Math.random().toString(36).substring(3);\r",
+							"//console.log(random_value);\r",
+							"var email= \"jim\"+random_value+\"@gmail.com\";\r",
+							"//console.log(email);\r",
+							"var name = \"Jim\"+random_value;\r",
+							"pm.environment.set(\"name_env\",name);\r",
+							"pm.environment.set(\"email_env\",email);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"verify status code\", ()=>\r",
+							"{\r",
+							"///pm.response.to.have.status(200);\r",
+							"pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
+							"});\r",
+							"pm.test(\"response time below 600ms\",()=>{\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(600);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"name\":\"{{name_env}}\", \r\n\"gender\":\"male\", \r\n\"email\":\"{{email_env}}\", \r\n\"status\":\"active\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{url}}/public/v2/users/{{id_env}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id_env}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "deleteUser",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.environment.unset(\"id_env\");\r",
+							"pm.environment.unset(\"name_env\");\r",
+							"pm.environment.unset(\"email_env\");\r",
+							"pm.test(\"verify status code\", ()=>\r",
+							"{\r",
+							"pm.response.to.have.status(204);\r",
+							"//pm.expect(pm.response.code).to.be.oneOf([200,201]);\r",
+							"});\r",
+							"pm.test(\"response time below 600ms\",()=>{\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(600);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "{{url}}/public/v2/users/{{id_env}}",
+					"host": [
+						"{{url}}"
+					],
+					"path": [
+						"public",
+						"v2",
+						"users",
+						"{{id_env}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "ec305ed6e21a2d0181c0a8775ed4aa4451d461dcec7dc1d8aff859f2e380caff",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "url",
+			"value": "https://gorest.co.in"
+		}
+	]
+}
